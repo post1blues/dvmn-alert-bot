@@ -3,6 +3,7 @@ import requests
 from time import sleep
 import telegram
 import textwrap
+import logging
 
 
 def get_long_polling_reviews(timestamp, token):
@@ -10,6 +11,7 @@ def get_long_polling_reviews(timestamp, token):
     long_polling_url = "https://dvmn.org/api/long_polling/"
     payload = {"timestamp": timestamp}
     headers = {"Authorization": f"Token {token}"}
+
     try:
         response = requests.get(
             long_polling_url,
@@ -31,13 +33,16 @@ def get_long_polling_reviews(timestamp, token):
 
 
 def start_bot():
-    dvmn_token = os.environ['DVMN_TOKEN']
-    telegram_token = os.environ['TELEGRAM_TOKEN']
-    chat_id = os.environ['CHAT_ID']
+    logging.basicConfig(level=logging.INFO)
+
+    dvmn_token = os.environ["DVMN_TOKEN"]
+    telegram_token = os.environ["TELEGRAM_TOKEN"]
+    chat_id = os.environ["CHAT_ID"]
 
     bot = telegram.Bot(token=telegram_token)
-
     timestamp_to_request = None
+
+    logging.info("Бот запущен")
 
     while True:
         reviews = get_long_polling_reviews(timestamp=timestamp_to_request, token=dvmn_token)
