@@ -46,7 +46,6 @@ def start_bot():
 
     while True:
         reviews = get_long_polling_reviews(timestamp=timestamp_to_request, token=dvmn_token)
-        print(reviews)
         if reviews["status"] == "timeout":
             timestamp_to_request = reviews["timestamp_to_request"]
         else:
