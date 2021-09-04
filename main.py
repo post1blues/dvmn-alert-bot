@@ -81,10 +81,9 @@ if __name__ == "__main__":
     logger.setLevel(logging.WARNING)
     logger.addHandler(TelegramLogsHandler(bot, chat_id))
 
-    while True:
-        logger.warning("Bot starts working")
+    while True:     
         try:
-            1 / 0
             start_bot()
+            logger.warning("Bot starts working")
         except Exception as error:
             logger.error(f"Bot failed.\n{error}\n\nTry to restart the bot.")
