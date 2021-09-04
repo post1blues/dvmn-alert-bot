@@ -84,6 +84,7 @@ if __name__ == "__main__":
     while True:
         logger.warning("Bot starts working")
         try:
+            1 / 0
             start_bot()
         except Exception as error:
             logger.error(f"Bot failed.\n{error}\n\nTry to restart the bot.")
