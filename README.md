@@ -25,4 +25,4 @@ Dvmn-alert-bot - простое приложение, которое позво�
 
 *Пример работы*
 
-![](https://prnt.sc/1r93pb3)
+![](https://image.prntscr.com/image/_4SprbnZQ5K_mYcnbA916g.png)
