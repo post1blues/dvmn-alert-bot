@@ -33,16 +33,7 @@ def get_long_polling_reviews(timestamp, token):
 
 
 def start_bot():
-    logging.basicConfig(level=logging.INFO)
-
-    dvmn_token = os.environ["DVMN_TOKEN"]
-    telegram_token = os.environ["TELEGRAM_TOKEN"]
-    chat_id = os.environ["CHAT_ID"]
-
-    bot = telegram.Bot(token=telegram_token)
     timestamp_to_request = None
-
-    logging.info("Бот запущен")
 
     while True:
         reviews = get_long_polling_reviews(timestamp=timestamp_to_request, token=dvmn_token)
@@ -69,4 +60,35 @@ def start_bot():
 
 
 if __name__ == "__main__":
-    start_bot()
+
+    dvmn_token = os.environ["DVMN_TOKEN"]
+    telegram_token = os.environ["TELEGRAM_TOKEN"]
+    chat_id = os.environ["CHAT_ID"]
+
+    bot = telegram.Bot(token=telegram_token)
+
+    logging.info("Бот запущен")
+    logging.basicConfig(format="%(levelname)s %(message)s")
+
+    class TelegramLogsHandler(logging.Handler):
+
+        def __init__(self, tg_bot, log_chat_id):
+            super().__init__()
+            self.log_chat_id = log_chat_id
+            self.tg_bot = tg_bot
+
+        def emit(self, record):
+            log_entry = self.format(record)
+            self.tg_bot.send_message(chat_id=self.log_chat_id, text=log_entry)
+
+
+    logger = logging.getLogger("Logger")
+    logger.setLevel(logging.WARNING)
+    logger.addHandler(TelegramLogsHandler(bot, chat_id))
+
+    while True:
+        logger.warning("Bot starts working")
+        try:
+            start_bot()
+        except Exception as error:
+            logger.error(f"Bot failed.\n{error}\n\nTry to restart the bot.")
