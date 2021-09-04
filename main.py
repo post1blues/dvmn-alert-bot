@@ -25,10 +25,8 @@ def get_long_polling_reviews(timestamp, token):
     except requests.exceptions.ReadTimeout:
         pass
     except requests.exceptions.ConnectionError:
-        print("Connection error")
         sleep(10)
     except requests.exceptions.HTTPError:
-        print(f"Http error: {long_polling_url}")
         sleep(30)
 
 
@@ -60,14 +58,12 @@ def start_bot():
 
 
 if __name__ == "__main__":
-
     dvmn_token = os.environ["DVMN_TOKEN"]
     telegram_token = os.environ["TELEGRAM_TOKEN"]
     chat_id = os.environ["CHAT_ID"]
 
     bot = telegram.Bot(token=telegram_token)
 
-    logging.info("Бот запущен")
     logging.basicConfig(format="%(levelname)s %(message)s")
 
     class TelegramLogsHandler(logging.Handler):
@@ -80,7 +76,6 @@ if __name__ == "__main__":
         def emit(self, record):
             log_entry = self.format(record)
             self.tg_bot.send_message(chat_id=self.log_chat_id, text=log_entry)
-
 
     logger = logging.getLogger("Logger")
     logger.setLevel(logging.WARNING)
