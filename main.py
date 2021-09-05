@@ -62,16 +62,14 @@ if __name__ == "__main__":
     telegram_token = os.environ["TELEGRAM_TOKEN"]
     chat_id = os.environ["CHAT_ID"]
 
-    bot = telegram.Bot(token=telegram_token)
-
     logging.basicConfig(format="%(levelname)s %(message)s")
 
     class TelegramLogsHandler(logging.Handler):
 
-        def __init__(self, tg_bot, log_chat_id):
+        def __init__(self, log_chat_id):
             super().__init__()
             self.log_chat_id = log_chat_id
-            self.tg_bot = tg_bot
+            self.tg_bot = telegram.Bot(token=telegram_token)
 
         def emit(self, record):
             log_entry = self.format(record)
@@ -79,11 +77,19 @@ if __name__ == "__main__":
 
     logger = logging.getLogger("Logger")
     logger.setLevel(logging.WARNING)
-    logger.addHandler(TelegramLogsHandler(bot, chat_id))
+    logger.addHandler(TelegramLogsHandler(chat_id))
 
-    while True:     
+    while True:
         try:
             logger.warning("Bot starts working")
+            bot = telegram.Bot(token=telegram_token)
             start_bot()
         except Exception as error:
-            logger.error(f"Bot failed.\n{error}\n\nTry to restart the bot.")
+            error_msg = f"""\
+            Bot failed.
+            {error}
+
+            Try to restart the bot.
+            """
+            
+            logger.error(textwrap.dedent(error_msg))
