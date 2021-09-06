@@ -10,10 +10,10 @@ logger = logging.getLogger("Logger")
 
 
 class TelegramLogsHandler(logging.Handler):
-    def __init__(self, log_chat_id):
+    def __init__(self, log_chat_id, tg_bot):
         super().__init__()
         self.log_chat_id = log_chat_id
-        self.tg_bot = telegram.Bot(token=telegram_token)
+        self.tg_bot = tg_bot
 
     def emit(self, record):
         log_entry = self.format(record)
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     bot = telegram.Bot(token=telegram_token)
 
     logger.setLevel(logging.WARNING)
-    logger.addHandler(TelegramLogsHandler(chat_id))
+    logger.addHandler(TelegramLogsHandler(chat_id, bot))
     logger.warning("Bot starts working")
 
     start_bot()
