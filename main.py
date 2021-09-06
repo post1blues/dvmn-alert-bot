@@ -6,6 +6,17 @@ import textwrap
 import logging
 
 
+class TelegramLogsHandler(logging.Handler):
+    def __init__(self, log_chat_id):
+        super().__init__()
+        self.log_chat_id = log_chat_id
+        self.tg_bot = telegram.Bot(token=telegram_token)
+
+    def emit(self, record):
+        log_entry = self.format(record)
+        self.tg_bot.send_message(chat_id=self.log_chat_id, text=log_entry)
+
+
 def get_long_polling_reviews(timestamp, token):
     request_timeout = 100
     long_polling_url = "https://dvmn.org/api/long_polling/"
@@ -63,17 +74,6 @@ if __name__ == "__main__":
     chat_id = os.environ["CHAT_ID"]
 
     logging.basicConfig(format="%(levelname)s %(message)s")
-
-    class TelegramLogsHandler(logging.Handler):
-
-        def __init__(self, log_chat_id):
-            super().__init__()
-            self.log_chat_id = log_chat_id
-            self.tg_bot = telegram.Bot(token=telegram_token)
-
-        def emit(self, record):
-            log_entry = self.format(record)
-            self.tg_bot.send_message(chat_id=self.log_chat_id, text=log_entry)
 
     logger = logging.getLogger("Logger")
     logger.setLevel(logging.WARNING)
