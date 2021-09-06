@@ -6,6 +6,9 @@ import textwrap
 import logging
 
 
+logger = logging.getLogger("Logger")
+
+
 class TelegramLogsHandler(logging.Handler):
     def __init__(self, log_chat_id):
         super().__init__()
@@ -31,13 +34,13 @@ def get_long_polling_reviews(timestamp, token):
             timeout=request_timeout
         )
         response.raise_for_status()
-        print(response.url)
         return response.json()
     except requests.exceptions.ReadTimeout:
         pass
     except requests.exceptions.ConnectionError:
         sleep(10)
     except requests.exceptions.HTTPError:
+        logger.error("Ошибка HTTPError. Вероятно неправильный url указан в настройках.")
         sleep(30)
 
 
@@ -73,23 +76,10 @@ if __name__ == "__main__":
     telegram_token = os.environ["TELEGRAM_TOKEN"]
     chat_id = os.environ["CHAT_ID"]
 
-    logging.basicConfig(format="%(levelname)s %(message)s")
+    bot = telegram.Bot(token=telegram_token)
 
-    logger = logging.getLogger("Logger")
     logger.setLevel(logging.WARNING)
     logger.addHandler(TelegramLogsHandler(chat_id))
+    logger.warning("Bot starts working")
 
-    while True:
-        try:
-            logger.warning("Bot starts working")
-            bot = telegram.Bot(token=telegram_token)
-            start_bot()
-        except Exception as error:
-            error_msg = f"""\
-            Bot failed.
-            {error}
-
-            Try to restart the bot.
-            """
-            
-            logger.error(textwrap.dedent(error_msg))
+    start_bot()
